@@ -28,7 +28,7 @@ Models = [
     #{'class':FwdStepNetCSBO, 'new_config':{}}
     ]
 loss_function = torch.nn.MSELoss()
-dataset_size = 10000
+dataset_size = 1000
 train_size = round(0.8 * dataset_size)
 test_size = dataset_size - train_size
 max_epochs = 10
