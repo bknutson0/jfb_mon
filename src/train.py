@@ -23,9 +23,9 @@ loss_function = torch.nn.MSELoss()
 seed = 0
 
 # Set random seed for ground truth model initialization and synthetic data generation
-True_Model = {'class':FwdStepNetAD, 'new_config':{}}
 set_seed(seed)
-train_loader, test_loader = load_data('synthetic', True_Model)
+#train_loader, test_loader = load_data('synthetic', True_Model={'class':FwdStepNetAD, 'new_config':{}})
+train_loader, test_loader = load_data('mnist')
 
 # Select models to train
 Models = [
