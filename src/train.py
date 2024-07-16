@@ -6,15 +6,28 @@ from src.models.mon_net import MonNetAD, MonNetJFB, MonNetJFBR, MonNetJFBCSBO
 #from models.con_net import ConNetAD, ConNetJFB
 from src.models.fwd_step_net import FwdStepNetAD, FwdStepNetJFB, FwdStepNetJFBR, FwdStepNetCSBO
 
-from src.utils.data import synthesize_data 
-from src.utils.seed import set_seed
 from src.utils.config import default_config
+from src.utils.seed import set_seed
 from src.utils.device import get_device
+from src.utils.data import load_data
 
-device = get_device(verbose=True)
+# Get training configuration
+lr = default_config['lr']
+max_epochs = default_config['max_epochs']
+
+# Print device
+get_device(verbose=True)
 
 # Set parameters
+loss_function = torch.nn.MSELoss()
+seed = 0
+
+# Set random seed for ground truth model initialization and synthetic data generation
 True_Model = {'class':FwdStepNetAD, 'new_config':{}}
+set_seed(seed)
+train_loader, test_loader = load_data('synthetic', True_Model)
+
+# Select models to train
 Models = [
     # {'class':MonNetAD, 'new_config':{}},
     # {'class':MonNetJFB, 'new_config':{}},
@@ -27,27 +40,6 @@ Models = [
     #{'class':FwdStepNetJFBR, 'new_config':{'decay':1.1}},
     #{'class':FwdStepNetCSBO, 'new_config':{}}
     ]
-loss_function = torch.nn.MSELoss()
-dataset_size = 1000
-train_size = round(0.8 * dataset_size)
-test_size = dataset_size - train_size
-max_epochs = 10
-batch_size = 32
-lr = 10
-seed = 0
-
-# Set random seed for ground truth model initialization and synthetic data generation
-set_seed(seed)
-
-# Synthesize and split data, and instantiate data loaders
-synthesize_data(True_Model, dataset_size, 'data/dataset.pth')
-dataset_dict = torch.load('data/dataset.pth')
-X = dataset_dict['X']
-Y = dataset_dict['Y']
-dataset = torch.utils.data.TensorDataset(X, Y)
-train_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, test_size])
-train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Train models
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
@@ -77,7 +69,7 @@ for Model_config in Models:
 
     # Train the model using batched SGD and save training and testing losses 
     # TODO: create option for randomly sampled batches instead of epoch-wise
-    epochs, times, test_losses = model.train_model(train_loader, test_loader, max_epochs)
+    epochs, times, test_losses = model.train_model(train_loader, test_loader)
 
     # # Print first input, output, and prediction as numpy arrays
     # print(f'AFTER TRAINING')

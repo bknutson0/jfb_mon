@@ -3,7 +3,7 @@ env/
 __pycache__/
 
 # Ignore contents of certain repo folders
-# data/*
+data/*
 # !outputs/.gitkeep
 # outputs/*
 # !outputs/.gitkeep

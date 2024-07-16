@@ -73,11 +73,11 @@ class BaseNet(torch.nn.Module, ABC):
         loss.backward()
         self.optimizer.step()
 
-    def train_model(self, train_loader, test_loader=None, max_epochs=100):
+    def train_model(self, train_loader, test_loader=None):
+        max_epochs = default_config['max_epochs']
         epochs = []
         times = []
         test_losses = []
-
         start_time = time.time()
 
         # If testing, evaluate model on test data before training
